@@ -1,0 +1,44 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}Categories — Dashboard{% endblock %}
+{% block dashboard_content %}
+<h2 class="mb-4">Categories</h2>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="stat-card p-0">
+      <table class="table mb-0 align-middle">
+        <thead><tr><th>Name</th><th>Products</th><th>Order</th><th></th></tr></thead>
+        <tbody>
+          {% for cat in categories %}
+            <tr>
+              <td>{{ cat.name }}</td>
+              <td>{{ cat.product_count }}</td>
+              <td>{{ cat.display_order }}</td>
+              <td class="text-end">
+                <form method="post" action="{% url 'dashboard:category_delete' cat.id %}" data-confirm="Delete this category? Products in it will also be removed.">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4" class="text-muted p-4">No categories yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="stat-card">
+      <h6 class="mb-3">Add Category</h6>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-2">{{ form.name }}</div>
+        <div class="mb-2">{{ form.icon }}</div>
+        <div class="mb-2">{{ form.display_order }}</div>
+        <button type="submit" class="btn-tea">Add Category</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

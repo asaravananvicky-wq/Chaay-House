@@ -1,0 +1,110 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}Overview — Dashboard{% endblock %}
+{% block dashboard_content %}
+<h2 class="mb-4">Dashboard Overview</h2>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="text-muted small">Total Orders</div>
+      <div class="stat-value">{{ total_orders }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="text-muted small">Today's Orders</div>
+      <div class="stat-value">{{ todays_orders }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="text-muted small">Total Customers</div>
+      <div class="stat-value">{{ total_customers }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="text-muted small">Total Products</div>
+      <div class="stat-value">{{ total_products }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-4">
+    <div class="stat-card h-100">
+      <div class="text-muted small">Total Sales</div>
+      <div class="stat-value">₹{{ total_sales }}</div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="stat-card h-100">
+      <div class="text-muted small mb-2">Orders — Last 7 Days</div>
+      <canvas id="ordersChart" height="90"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="stat-card h-100">
+      <h6 class="mb-3">Popular Products</h6>
+      <canvas id="popularChart" height="180"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="stat-card h-100">
+      <h6 class="mb-3">Recent Orders</h6>
+      <table class="table table-sm">
+        <thead><tr><th>ID</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for order in recent_orders %}
+            <tr>
+              <td><a href="{% url 'dashboard:order_detail' order.id %}">#{{ order.id }}</a></td>
+              <td>{{ order.full_name }}</td>
+              <td>₹{{ order.total }}</td>
+              <td><span class="badge bg-secondary">{{ order.get_status_display }}</span></td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4" class="text-muted">No orders yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const ordersChart = new Chart(document.getElementById('ordersChart'), {
+    type: 'line',
+    data: {
+      labels: [{% for d in last_7_days %}"{{ d.day|date:'d M' }}",{% endfor %}],
+      datasets: [{
+        label: 'Orders',
+        data: [{% for d in last_7_days %}{{ d.count }},{% endfor %}],
+        borderColor: '#1F4D3A',
+        backgroundColor: 'rgba(31,77,58,0.1)',
+        tension: 0.3,
+        fill: true,
+      }]
+    },
+    options: { plugins: { legend: { display: false } } }
+  });
+
+  const popularChart = new Chart(document.getElementById('popularChart'), {
+    type: 'bar',
+    data: {
+      labels: [{% for p in popular_products %}"{{ p.product_name }}",{% endfor %}],
+      datasets: [{
+        label: 'Units Sold',
+        data: [{% for p in popular_products %}{{ p.qty }},{% endfor %}],
+        backgroundColor: '#B8843A',
+      }]
+    },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } } }
+  });
+</script>
+{% endblock %}

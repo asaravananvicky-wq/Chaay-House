@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} — Chaay House{% endblock %}
+{% block meta_description %}{{ product.description|truncatewords:20 }}{% endblock %}
+{% block content %}
+<div class="container py-5">
+
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'products:menu' %}">Menu</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'products:menu' %}?category={{ product.category.slug }}">{{ product.category.name }}</a></li>
+      <li class="breadcrumb-item active">{{ product.name }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-5">
+    <div class="col-lg-6">
+      <div class="product-img-wrap rounded-4">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-100">
+        {% else %}
+          <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=800&q=70" alt="{{ product.name }}" class="w-100">
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-lg-6">
+      {% if product.is_bestseller %}<span class="badge-bestseller mb-2 d-inline-block">Bestseller</span>{% endif %}
+      <h1 class="h2">{{ product.name }}</h1>
+      <div class="review-stars mb-2">
+        {% for i in "12345" %}<i class="fa-solid fa-star{% if forloop.counter > product.average_rating %}-o{% endif %}"></i>{% endfor %}
+        <span class="text-muted small ms-1">{{ product.average_rating }} ({{ product.review_count }} reviews)</span>
+      </div>
+      <p class="lead price-tag">₹{{ product.price }}</p>
+      <p>{{ product.description|default:"A carefully prepared favorite from our menu." }}</p>
+
+      {% if product.is_available %}
+        <p class="text-success small"><i class="fa-solid fa-circle-check me-1"></i>In stock</p>
+        <form method="post" action="{% url 'cart:add' product.id %}" class="d-flex align-items-center gap-3 mt-4">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <div class="qty-control d-flex align-items-center gap-2">
+            <button type="button" id="qty-decrease" class="d-flex align-items-center justify-content-center">-</button>
+            <input type="number" id="qty-input" name="quantity" value="1" min="1" max="99" class="form-control text-center" style="width:60px">
+            <button type="button" id="qty-increase" class="d-flex align-items-center justify-content-center">+</button>
+          </div>
+          <button type="submit" class="btn-tea"><i class="fa-solid fa-cart-plus me-1"></i>Add to Cart</button>
+        </form>
+      {% else %}
+        <span class="badge bg-secondary mt-3 d-inline-block">Currently sold out</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if related_products %}
+    <section class="mt-5 pt-4">
+      <h3 class="mb-4">You may also like</h3>
+      <div class="row g-4">
+        {% for product in related_products %}
+          <div class="col-6 col-md-3">{% include 'partials/product_card.html' %}</div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if reviews %}
+    <section class="mt-5 pt-4">
+      <h3 class="mb-4">Customer Reviews</h3>
+      {% for review in reviews %}
+        <div class="border-bottom py-3">
+          <div class="review-stars">
+            {% for i in "12345" %}<i class="fa-solid fa-star{% if forloop.counter > review.rating %}-o{% endif %}"></i>{% endfor %}
+          </div>
+          <p class="mb-1">{{ review.comment }}</p>
+          <small class="text-muted">— {{ review.customer.first_name|default:review.customer.username }}</small>
+        </div>
+      {% endfor %}
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

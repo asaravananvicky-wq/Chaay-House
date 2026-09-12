@@ -1,0 +1,44 @@
+<footer class="footer-tea">
+  <div class="container">
+    <div class="row gy-4">
+      <div class="col-md-4">
+        <h5><i class="fa-solid fa-mug-hot me-2"></i>Chaay House</h5>
+        <p>Traditional tea, modern experience. Freshly brewed. Simply perfect.</p>
+        <div>
+          <a href="#" class="me-3"><i class="fa-brands fa-instagram fa-lg"></i></a>
+          <a href="#" class="me-3"><i class="fa-brands fa-facebook fa-lg"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter fa-lg"></i></a>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <h5>Shop</h5>
+        <ul class="list-unstyled">
+          <li><a href="{% url 'products:menu' %}">Menu</a></li>
+          <li><a href="{% url 'cart:cart' %}">Cart</a></li>
+          <li><a href="{% url 'contact:contact' %}">Contact</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3">
+        <h5>Account</h5>
+        <ul class="list-unstyled">
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'accounts:profile' %}">My Profile</a></li>
+            <li><a href="{% url 'accounts:my_orders' %}">My Orders</a></li>
+          {% else %}
+            <li><a href="{% url 'accounts:login' %}">Login</a></li>
+            <li><a href="{% url 'accounts:register' %}">Create Account</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class="col-md-3">
+        <h5>Visit Us</h5>
+        <p class="mb-1"><i class="fa-solid fa-location-dot me-2"></i>12 MG Road, Chennai, TN</p>
+        <p class="mb-1"><i class="fa-solid fa-phone me-2"></i>+91 98765 43210</p>
+        <p><i class="fa-solid fa-envelope me-2"></i>hello@chaayhouse.example</p>
+      </div>
+    </div>
+    <div class="footer-bottom text-center">
+      &copy; {% now "Y" %} Chaay House. All rights reserved. Built as a full-stack portfolio project.
+    </div>
+  </div>
+</footer>

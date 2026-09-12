@@ -1,0 +1,30 @@
+{% load static %}
+<div class="product-card">
+  <a href="{{ product.get_absolute_url }}" class="product-img-wrap d-block">
+    {% if product.image %}
+      <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+    {% else %}
+      <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=500&q=60" alt="{{ product.name }}" loading="lazy">
+    {% endif %}
+  </a>
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start mb-1">
+      <h3 class="h6 mb-0"><a href="{{ product.get_absolute_url }}" class="text-dark">{{ product.name }}</a></h3>
+      {% if product.is_bestseller %}<span class="badge-bestseller">Bestseller</span>{% endif %}
+    </div>
+    <p class="text-muted small mb-2">{{ product.description|truncatewords:10 }}</p>
+    <div class="d-flex justify-content-between align-items-center">
+      <span class="price-tag">₹{{ product.price }}</span>
+      {% if product.is_available %}
+        <form method="post" action="{% url 'cart:add' product.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="quantity" value="1">
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit" class="btn-tea btn-sm"><i class="fa-solid fa-cart-plus me-1"></i>Add</button>
+        </form>
+      {% else %}
+        <span class="badge bg-secondary">Sold out</span>
+      {% endif %}
+    </div>
+  </div>
+</div>

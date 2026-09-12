@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Menu — Chaay House{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="section-title">
+    <span class="eyebrow">Full Menu</span>
+    <h2>Explore Our Menu</h2>
+  </div>
+
+  <form method="get" class="row g-2 mb-4 align-items-center">
+    <div class="col-md-4">
+      <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search tea, coffee, snacks...">
+    </div>
+    <div class="col-6 col-md-2">
+      <select name="category" class="form-select">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+          <option value="{{ cat.slug }}" {% if cat.slug == selected_category %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-md-2">
+      <input type="number" name="min_price" value="{{ request.GET.min_price }}" class="form-control" placeholder="Min ₹">
+    </div>
+    <div class="col-6 col-md-2">
+      <input type="number" name="max_price" value="{{ request.GET.max_price }}" class="form-control" placeholder="Max ₹">
+    </div>
+    <div class="col-6 col-md-2">
+      <select name="sort" class="form-select">
+        <option value="">Sort: Featured</option>
+        <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+        <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+        <option value="name" {% if sort == 'name' %}selected{% endif %}>Name A-Z</option>
+        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest</option>
+      </select>
+    </div>
+    <div class="col-12">
+      <button type="submit" class="btn-tea btn-sm mt-1"><i class="fa-solid fa-filter me-1"></i>Apply Filters</button>
+      <a href="{% url 'products:menu' %}" class="btn btn-outline-secondary btn-sm mt-1">Clear</a>
+    </div>
+  </form>
+
+  {% if page_obj.object_list %}
+    <div class="row g-4">
+      {% for product in page_obj %}
+        <div class="col-6 col-md-4 col-lg-3">{% include 'partials/product_card.html' %}</div>
+      {% endfor %}
+    </div>
+
+    {% if page_obj.has_other_pages %}
+      <nav class="mt-5" aria-label="Menu pagination">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ query }}&category={{ selected_category }}&sort={{ sort }}">Previous</a></li>
+          {% endif %}
+          {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+              <a class="page-link" href="?page={{ num }}&q={{ query }}&category={{ selected_category }}&sort={{ sort }}">{{ num }}</a>
+            </li>
+          {% endfor %}
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ query }}&category={{ selected_category }}&sort={{ sort }}">Next</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+  {% else %}
+    <div class="empty-state">
+      <i class="fa-solid fa-mug-hot fa-3x"></i>
+      <h4>No products found</h4>
+      <p>Try adjusting your search or filters.</p>
+      <a href="{% url 'products:menu' %}" class="btn-outline-tea">Reset Filters</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

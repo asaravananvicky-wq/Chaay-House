@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Dashboard — Chaay House{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="{% static 'css/theme.css' %}" rel="stylesheet">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+<div class="dashboard-shell">
+  <aside class="dashboard-sidebar">
+    <h4 class="text-white mb-4"><i class="fa-solid fa-mug-hot me-2"></i>Chaay House</h4>
+    <a href="{% url 'dashboard:overview' %}" class="{% if request.resolver_match.url_name == 'overview' %}active{% endif %}"><i class="fa-solid fa-gauge me-2"></i>Overview</a>
+    <a href="{% url 'dashboard:products' %}" class="{% if 'product' in request.resolver_match.url_name %}active{% endif %}"><i class="fa-solid fa-mug-saucer me-2"></i>Products</a>
+    <a href="{% url 'dashboard:categories' %}" class="{% if 'categor' in request.resolver_match.url_name %}active{% endif %}"><i class="fa-solid fa-tags me-2"></i>Categories</a>
+    <a href="{% url 'dashboard:orders' %}" class="{% if 'order' in request.resolver_match.url_name %}active{% endif %}"><i class="fa-solid fa-receipt me-2"></i>Orders</a>
+    <a href="{% url 'dashboard:customers' %}" class="{% if 'customer' in request.resolver_match.url_name %}active{% endif %}"><i class="fa-solid fa-users me-2"></i>Customers</a>
+    <hr style="border-color: rgba(255,255,255,0.15)">
+    <a href="{% url 'home' %}"><i class="fa-solid fa-arrow-left me-2"></i>Back to Site</a>
+    <form method="post" action="{% url 'accounts:logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-link p-0 ps-3" style="color:var(--cream)">
+        <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+      </button>
+    </form>
+  </aside>
+
+  <div class="dashboard-content">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% block dashboard_content %}{% endblock %}
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

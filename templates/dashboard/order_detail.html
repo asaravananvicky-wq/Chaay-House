@@ -1,0 +1,46 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}Order #{{ order.id }} — Dashboard{% endblock %}
+{% block dashboard_content %}
+<a href="{% url 'dashboard:orders' %}" class="btn btn-outline-secondary btn-sm mb-3"><i class="fa-solid fa-arrow-left me-1"></i>Back</a>
+<h2 class="mb-4">Order #{{ order.id }}</h2>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="stat-card">
+      <h6>Items</h6>
+      {% for item in order.items.all %}
+        <div class="d-flex justify-content-between border-bottom py-2">
+          <span>{{ item.quantity }} × {{ item.product_name }}</span>
+          <span>₹{{ item.line_total }}</span>
+        </div>
+      {% endfor %}
+      <div class="d-flex justify-content-between pt-3">
+        <strong>Total</strong><strong>₹{{ order.total }}</strong>
+      </div>
+    </div>
+
+    <div class="stat-card mt-3">
+      <h6>Customer & Delivery</h6>
+      <p class="mb-1"><strong>{{ order.full_name }}</strong> ({{ order.customer.username }})</p>
+      <p class="mb-1">{{ order.phone }} · {{ order.email }}</p>
+      <p class="mb-1">{{ order.address }}, {{ order.city }} - {{ order.pincode }}</p>
+      {% if order.notes %}<p class="mb-0"><strong>Notes:</strong> {{ order.notes }}</p>{% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="stat-card">
+      <h6 class="mb-3">Update Status</h6>
+      <form method="post">
+        {% csrf_token %}
+        <select name="status" class="form-select mb-3">
+          {% for value, label in statuses %}
+            <option value="{{ value }}" {% if value == order.status %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn-tea w-100">Update Status</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

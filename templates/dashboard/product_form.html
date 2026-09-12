@@ -1,0 +1,46 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}{% if product %}Edit{% else %}Add{% endif %} Product — Dashboard{% endblock %}
+{% block dashboard_content %}
+<h2 class="mb-4">{% if product %}Edit Product{% else %}Add Product{% endif %}</h2>
+
+<div class="stat-card">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Product Name</label>
+        {{ form.name }}
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Category</label>
+        {{ form.category }}
+      </div>
+      <div class="col-12">
+        <label class="form-label">Description</label>
+        {{ form.description }}
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Price (₹)</label>
+        {{ form.price }}
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Stock</label>
+        {{ form.stock }}
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Product Image</label>
+        {{ form.image }}
+        {% if product.image %}<img src="{{ product.image.url }}" style="width:60px;height:60px;object-fit:cover" class="rounded mt-2">{% endif %}
+      </div>
+      <div class="col-md-6 form-check ms-2 mt-3">
+        {{ form.is_available }} <label class="form-check-label ms-1">Available for sale</label>
+      </div>
+      <div class="col-md-6 form-check ms-2 mt-3">
+        {{ form.is_bestseller }} <label class="form-check-label ms-1">Mark as bestseller</label>
+      </div>
+    </div>
+    <button type="submit" class="btn-tea mt-4">{% if product %}Save Changes{% else %}Create Product{% endif %}</button>
+    <a href="{% url 'dashboard:products' %}" class="btn btn-outline-secondary mt-4">Cancel</a>
+  </form>
+</div>
+{% endblock %}

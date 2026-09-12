@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Your Cart — Chaay House{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="section-title">
+    <span class="eyebrow">Your Order</span>
+    <h2>Shopping Cart</h2>
+  </div>
+
+  {% if items %}
+    <div class="row g-4">
+      <div class="col-lg-8">
+        {% for item in items %}
+          <div class="cart-row d-flex align-items-center gap-3">
+            <div style="width:80px;height:80px;flex-shrink:0" class="rounded-3 overflow-hidden bg-light">
+              {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" class="w-100 h-100" style="object-fit:cover" alt="{{ item.product.name }}">
+              {% else %}
+                <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=200&q=60" class="w-100 h-100" style="object-fit:cover" alt="{{ item.product.name }}">
+              {% endif %}
+            </div>
+            <div class="flex-grow-1">
+              <h6 class="mb-1"><a href="{{ item.product.get_absolute_url }}" class="text-dark">{{ item.product.name }}</a></h6>
+              <span class="text-muted">₹{{ item.product.price }} each</span>
+            </div>
+            <form method="post" action="{% url 'cart:update' item.id %}" class="d-flex align-items-center gap-2 qty-control">
+              {% csrf_token %}
+              <button type="submit" name="action" value="decrease">-</button>
+              <span class="fw-semibold">{{ item.quantity }}</span>
+              <button type="submit" name="action" value="increase">+</button>
+            </form>
+            <div style="width:90px" class="text-end fw-semibold">₹{{ item.line_total }}</div>
+            <form method="post" action="{% url 'cart:remove' item.id %}" data-confirm="Remove this item from your cart?">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-link text-danger"><i class="fa-solid fa-trash"></i></button>
+            </form>
+          </div>
+        {% endfor %}
+        <a href="{% url 'products:menu' %}" class="btn-outline-tea mt-4"><i class="fa-solid fa-arrow-left me-1"></i>Continue Shopping</a>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="summary-box">
+          <h5 class="mb-3">Order Summary</h5>
+          <div class="d-flex justify-content-between mb-2"><span>Subtotal</span><span>₹{{ cart.subtotal }}</span></div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Delivery</span>
+            <span>{% if cart.delivery_fee == 0 %}Free{% else %}₹{{ cart.delivery_fee }}{% endif %}</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between fw-bold h5"><span>Total</span><span>₹{{ cart.grand_total }}</span></div>
+          <a href="{% url 'orders:checkout' %}" class="btn-tea w-100 mt-3 text-center d-block">Proceed to Checkout</a>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <i class="fa-solid fa-cart-shopping fa-3x"></i>
+      <h4>Your cart is empty</h4>
+      <p>Add some tea and snacks to get started.</p>
+      <a href="{% url 'products:menu' %}" class="btn-tea">Browse Menu</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
